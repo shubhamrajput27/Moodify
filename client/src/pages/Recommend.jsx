@@ -37,7 +37,7 @@ export default function Recommend() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pt-24 pb-12 bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -45,10 +45,10 @@ export default function Recommend() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary-400 to-pink-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-coral to-primary-500 bg-clip-text text-transparent">
             Discover Your Music
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-lg">
             Tell us how you're feeling, and we'll find the perfect tracks for you
           </p>
         </motion.div>
@@ -63,8 +63,8 @@ export default function Recommend() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                 activeTab === tab.id
-                  ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/50'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                  ? 'bg-coral text-white shadow-lg'
+                  : 'bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-white/20'
               }`}
             >
               <span className="mr-2">{tab.icon}</span>
@@ -138,9 +138,9 @@ export default function Recommend() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full mx-auto mb-4"
+              className="w-16 h-16 border-4 border-coral border-t-transparent rounded-full mx-auto mb-4"
             />
-            <p className="text-gray-400 text-lg">Finding the perfect songs for you...</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Finding the perfect songs for you...</p>
           </motion.div>
         )}
 
@@ -168,10 +168,10 @@ export default function Recommend() {
             animate={{ opacity: 1 }}
           >
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-2">
+              <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
                 Recommended for You
               </h2>
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 {recommendations.length} tracks curated based on your {currentMood} mood
               </p>
             </div>
@@ -204,8 +204,8 @@ export default function Recommend() {
             className="text-center py-20"
           >
             <div className="text-6xl mb-4">🎵</div>
-            <h3 className="text-2xl font-semibold mb-2">Ready to Start?</h3>
-            <p className="text-gray-400">
+            <h3 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">Ready to Start?</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               Choose a mood detection method above to get personalized music recommendations
             </p>
           </motion.div>

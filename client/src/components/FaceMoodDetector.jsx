@@ -142,13 +142,13 @@ export default function FaceMoodDetector({ onMoodDetected }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mood-card"
+      className="p-8 rounded-2xl bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-white/5 transition-colors duration-300"
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="text-3xl">📸</span>
         <div>
-          <h3 className="text-xl font-semibold">Facial Expression</h3>
-          <p className="text-sm text-gray-400">Let your face tell the story</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Facial Expression</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Let your face tell the story</p>
         </div>
       </div>
 
@@ -157,9 +157,9 @@ export default function FaceMoodDetector({ onMoodDetected }) {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full mx-auto"
+            className="w-10 h-10 border-4 border-coral border-t-transparent rounded-full mx-auto"
           />
-          <p className="mt-4 text-gray-400">Loading face detection models...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading face detection models...</p>
         </div>
       )}
 
@@ -186,7 +186,7 @@ export default function FaceMoodDetector({ onMoodDetected }) {
             
             {!isDetecting && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <p className="text-white text-lg">Camera preview will appear here</p>
+                <p className="text-white dark:text-gray-200 text-lg">Camera preview will appear here</p>
               </div>
             )}
           </div>

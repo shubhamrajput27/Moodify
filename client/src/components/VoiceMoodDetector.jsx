@@ -134,13 +134,13 @@ export default function VoiceMoodDetector({ onMoodDetected }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mood-card"
+      className="p-8 rounded-2xl bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-white/5 transition-colors duration-300"
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="text-3xl">🎤</span>
         <div>
-          <h3 className="text-xl font-semibold">Voice Input</h3>
-          <p className="text-sm text-gray-400">Speak to express your mood</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Voice Input</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Speak to express your mood</p>
         </div>
       </div>
 
@@ -150,7 +150,7 @@ export default function VoiceMoodDetector({ onMoodDetected }) {
         </div>
       )}
 
-      <div className="bg-white/5 rounded-lg p-8 mb-4">
+      <div className="bg-gray-100 dark:bg-white/5 rounded-lg p-8 mb-4 transition-colors duration-300">
         <div className="flex flex-col items-center justify-center">
           {/* Audio visualizer */}
           {isRecording && (
@@ -160,7 +160,7 @@ export default function VoiceMoodDetector({ onMoodDetected }) {
               className="mb-4"
             >
               <div 
-                className="w-32 h-32 rounded-full bg-gradient-to-r from-primary-500 to-pink-500"
+                className="w-32 h-32 rounded-full bg-gradient-to-r from-coral to-primary-500"
                 style={{ 
                   opacity: 0.3 + audioLevel * 0.7,
                   transform: `scale(${0.8 + audioLevel * 0.4})`
@@ -170,7 +170,7 @@ export default function VoiceMoodDetector({ onMoodDetected }) {
           )}
 
           {!isRecording && !isAnalyzing && (
-            <div className="w-32 h-32 rounded-full bg-white/10 flex items-center justify-center mb-4">
+            <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center mb-4">
               <span className="text-5xl">🎤</span>
             </div>
           )}
@@ -179,18 +179,18 @@ export default function VoiceMoodDetector({ onMoodDetected }) {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full mb-4"
+              className="w-16 h-16 border-4 border-coral border-t-transparent rounded-full mb-4"
             />
           )}
 
-          <p className="text-center text-gray-400">
+          <p className="text-center text-gray-600 dark:text-gray-400">
             {isRecording && 'Listening... Speak now!'}
             {isAnalyzing && 'Analyzing your voice...'}
             {!isRecording && !isAnalyzing && 'Click to start recording'}
           </p>
 
           {isRecording && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
               Recording will auto-stop in 5 seconds
             </p>
           )}

@@ -27,9 +27,6 @@ export default function Navbar() {
             <NavLink to="/" active={location.pathname === '/' || location.pathname === '/home'} icon="🏠">
               HOME
             </NavLink>
-            <NavLink to="/profile" active={location.pathname === '/profile'} icon="👤">
-              PROFILE
-            </NavLink>
             <NavLink to="/recommend" active={location.pathname === '/recommend'} icon="🎯">
               RECOMMENDATIONS
             </NavLink>
