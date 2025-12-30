@@ -10,33 +10,31 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 transition-colors duration-300"
+      className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a] transition-colors duration-300 shadow-sm"
     >
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 360 }}
-              transition={{ duration: 0.5 }}
-              className="text-2xl"
-            >
-              🎵
-            </motion.div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Moodify
-              </h1>
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <span className="text-2xl">🎵</span>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              Moodify
+            </h1>
           </Link>
 
           {/* Navigation Links & Theme Toggle */}
-          <div className="flex items-center gap-2">
-            <NavLink to="/" active={location.pathname === '/'}>
+          <div className="flex items-center gap-6">
+            <NavLink to="/" active={location.pathname === '/' || location.pathname === '/home'} icon="🏠">
               HOME
             </NavLink>
-            <NavLink to="/recommend" active={location.pathname === '/recommend'}>
+            <NavLink to="/profile" active={location.pathname === '/profile'} icon="👤">
+              PROFILE
+            </NavLink>
+            <NavLink to="/recommend" active={location.pathname === '/recommend'} icon="🎯">
               RECOMMENDATIONS
+            </NavLink>
+            <NavLink to="/login" active={location.pathname === '/login'} icon="🔐">
+              LOGIN
             </NavLink>
             
             {/* Theme Toggle Button */}
@@ -44,10 +42,11 @@ export default function Navbar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 transition-all"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
               aria-label="Toggle theme"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              <span className="text-xl">
+              <span className="text-2xl">
                 {theme === 'dark' ? '☀️' : '🌙'}
               </span>
             </motion.button>
@@ -58,19 +57,20 @@ export default function Navbar() {
   );
 }
 
-function NavLink({ to, active, children }) {
+function NavLink({ to, active, children, icon }) {
   return (
     <Link to={to}>
       <motion.div
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+        className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium transition-all ${
           active
-            ? 'bg-coral text-white'
-            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/5'
+            ? 'text-coral'
+            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
         }`}
       >
-        {children}
+        <span>{icon}</span>
+        <span>{children}</span>
       </motion.div>
     </Link>
   );
