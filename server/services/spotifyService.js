@@ -17,8 +17,13 @@ class SpotifyService {
   async getAccessToken() {
     // Return cached token if still valid
     if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
+      console.log('Using cached Spotify token');
       return this.accessToken;
     }
+
+    console.log('Fetching new Spotify access token...');
+    console.log('Client ID:', this.clientId ? `${this.clientId.substring(0, 10)}...` : 'MISSING');
+    console.log('Client Secret:', this.clientSecret ? 'Present' : 'MISSING');
 
     try {
       const response = await axios.post(
@@ -38,9 +43,10 @@ class SpotifyService {
       // Set expiry with 5-minute buffer
       this.tokenExpiry = Date.now() + (response.data.expires_in - 300) * 1000;
       
+      console.log('✓ Successfully obtained Spotify access token');
       return this.accessToken;
     } catch (error) {
-      console.error('Error getting Spotify access token:', error.response?.data || error.message);
+      console.error('❌ Error getting Spotify access token:', error.response?.data || error.message);
       throw new Error('Failed to authenticate with Spotify');
     }
   }
@@ -128,6 +134,7 @@ class SpotifyService {
    */
   async getRecommendations(mood, limit = 20) {
     try {
+      console.log(`\n🎵 Fetching recommendations for mood: ${mood}, limit: ${limit}`);
       const token = await this.getAccessToken();
       const moodData = this.getMoodMapping(mood);
 
@@ -143,6 +150,8 @@ class SpotifyService {
         params.append(key, value.toString());
       });
 
+      console.log('Request params:', params.toString());
+
       const response = await axios.get(
         `https://api.spotify.com/v1/recommendations?${params}`,
         {
@@ -151,6 +160,8 @@ class SpotifyService {
           },
         }
       );
+
+      console.log(`✓ Received ${response.data.tracks.length} tracks from Spotify`);
 
       // Format the response
       return response.data.tracks.map(track => ({
@@ -165,7 +176,11 @@ class SpotifyService {
         popularity: track.popularity
       }));
     } catch (error) {
-      console.error('Error getting recommendations:', error.response?.data || error.message);
+      console.error('❌ Error getting recommendations:', error.response?.data || error.message);
+      if (error.response) {
+        console.error('Status:', error.response.status);
+        console.error('Response:', JSON.stringify(error.response.data, null, 2));
+      }
       throw new Error('Failed to get recommendations from Spotify');
     }
   }
