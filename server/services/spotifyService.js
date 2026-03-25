@@ -52,7 +52,7 @@ class SpotifyService {
     const moodMappings = {
       happy: {
         genres: ['pop', 'dance', 'party', 'summer'],
-        seedGenres: 'pop,dance,happy',
+        seedGenres: 'pop,dance,indie-pop',
         features: { 
           min_valence: 0.6, 
           min_energy: 0.6,
@@ -62,7 +62,7 @@ class SpotifyService {
       },
       sad: {
         genres: ['acoustic', 'piano', 'sad', 'blues'],
-        seedGenres: 'acoustic,piano,sad',
+        seedGenres: 'acoustic,singer-songwriter,blues',
         features: { 
           max_valence: 0.4, 
           max_energy: 0.5,
@@ -81,7 +81,7 @@ class SpotifyService {
       },
       relaxed: {
         genres: ['ambient', 'chill', 'study', 'sleep'],
-        seedGenres: 'ambient,chill,sleep',
+        seedGenres: 'ambient,chill,acoustic',
         features: { 
           max_energy: 0.4, 
           max_tempo: 100,
@@ -91,7 +91,7 @@ class SpotifyService {
       },
       calm: {
         genres: ['ambient', 'lo-fi', 'meditation', 'classical'],
-        seedGenres: 'ambient,classical,chill',
+        seedGenres: 'ambient,classical,new-age',
         features: { 
           max_energy: 0.5, 
           max_tempo: 110,
@@ -101,7 +101,7 @@ class SpotifyService {
       },
       energetic: {
         genres: ['edm', 'workout', 'electronic', 'dance'],
-        seedGenres: 'edm,workout,dance',
+        seedGenres: 'edm,electronic,dance',
         features: { 
           min_energy: 0.7, 
           min_tempo: 120,
@@ -111,7 +111,7 @@ class SpotifyService {
       },
       romantic: {
         genres: ['romance', 'soul', 'r-n-b', 'love'],
-        seedGenres: 'soul,r-n-b,romance',
+        seedGenres: 'soul,r-n-b,jazz',
         features: { 
           min_valence: 0.5,
           target_valence: 0.7,
@@ -143,14 +143,33 @@ class SpotifyService {
         params.append(key, value.toString());
       });
 
-      const response = await axios.get(
-        `https://api.spotify.com/v1/recommendations?${params}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      let response;
+      try {
+        response = await axios.get(
+          `https://api.spotify.com/v1/recommendations?${params}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (error) {
+        // Retry once with known-safe seeds if Spotify rejects seed genres.
+        if (error.response?.status === 400) {
+          const fallbackParams = new URLSearchParams(params.toString());
+          fallbackParams.set('seed_genres', 'pop,dance,rock');
+          response = await axios.get(
+            `https://api.spotify.com/v1/recommendations?${fallbackParams}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } else {
+          throw error;
         }
-      );
+      }
 
       // Format the response
       return response.data.tracks.map(track => ({
