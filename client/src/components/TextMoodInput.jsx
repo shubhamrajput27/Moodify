@@ -41,7 +41,7 @@ export default function TextMoodInput({ onMoodDetected }) {
         <span className="text-3xl">💭</span>
         <div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Text Input</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Describe how you're feeling</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Describe how you&apos;re feeling</p>
         </div>
       </div>
 
