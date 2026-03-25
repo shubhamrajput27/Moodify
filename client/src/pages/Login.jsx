@@ -33,8 +33,8 @@ export default function Login() {
   };
 
   const handleSpotifyLogin = () => {
-    // Redirect to Spotify OAuth
-    window.location.href = 'http://localhost:5000/api/spotify/login';
+    // This project currently uses app-level recommendations, not OAuth user login.
+    setError('Spotify OAuth login is not configured yet. Please use mood recommendations to continue.');
   };
 
   return (
