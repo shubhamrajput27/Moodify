@@ -76,7 +76,7 @@ export default function Recommend() {
             Discover Your Music
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Tell us how you're feeling, and we'll find the perfect tracks for you
+            Tell us how you&apos;re feeling, and we&apos;ll find the perfect tracks for you
           </p>
         </motion.div>
 
@@ -105,7 +105,7 @@ export default function Recommend() {
           </form>
           {searchResults.length > 0 && (
             <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Found {searchResults.length} results for "{searchQuery}"
+              Found {searchResults.length} results for &quot;{searchQuery}&quot;
               <button
                 onClick={() => {
                   setSearchQuery('');
