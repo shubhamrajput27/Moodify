@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TextMoodInput from '../components/TextMoodInput';
-import FaceMoodDetector from '../components/FaceMoodDetector';
 import VoiceMoodDetector from '../components/VoiceMoodDetector';
 import SongCard from '../components/SongCard';
 import spotifyAPI from '../utils/spotify';
 import { getMoodData } from '../utils/moodMapper';
+
+const FaceMoodDetector = lazy(() => import('../components/FaceMoodDetector'));
 
 export default function Recommend() {
   const [activeTab, setActiveTab] = useState('text');
@@ -160,7 +161,15 @@ export default function Recommend() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
               >
-                <FaceMoodDetector onMoodDetected={handleMoodDetected} />
+                <Suspense
+                  fallback={
+                    <div className="p-8 rounded-2xl bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-white/5 text-center text-gray-600 dark:text-gray-400">
+                      Loading face detector...
+                    </div>
+                  }
+                >
+                  <FaceMoodDetector onMoodDetected={handleMoodDetected} />
+                </Suspense>
               </motion.div>
             )}
 
