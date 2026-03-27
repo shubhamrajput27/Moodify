@@ -6,6 +6,19 @@
   body {
     @apply bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-white font-sans antialiased transition-colors duration-300;
   }
+
+  select {
+    color-scheme: light;
+  }
+
+  .dark select {
+    color-scheme: dark;
+  }
+
+  .dark select option {
+    background-color: #121212;
+    color: #f3f4f6;
+  }
 }
 
 @layer components {
