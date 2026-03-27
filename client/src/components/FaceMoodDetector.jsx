@@ -19,19 +19,35 @@ export default function FaceMoodDetector({ onMoodDetected }) {
     const loadModels = async () => {
       try {
         setIsLoading(true);
-        const MODEL_URL = '/models'; // Place models in public/models folder
-        
-        await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
-          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
-        ]);
+        const modelSources = [
+          '/models',
+          'https://justadudewhohacks.github.io/face-api.js/models'
+        ];
+
+        let loaded = false;
+        for (const modelUrl of modelSources) {
+          try {
+            await Promise.all([
+              faceapi.nets.tinyFaceDetector.loadFromUri(modelUrl),
+              faceapi.nets.faceExpressionNet.loadFromUri(modelUrl),
+              faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl)
+            ]);
+            loaded = true;
+            break;
+          } catch {
+            // Try the next source.
+          }
+        }
+
+        if (!loaded) {
+          throw new Error('Unable to load face detection models from any source');
+        }
         
         setModelsLoaded(true);
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading models:', err);
-        setError('Failed to load face detection models');
+        setError('Failed to load face detection models. Please check your internet connection and try again.');
         setIsLoading(false);
       }
     };
@@ -73,6 +89,17 @@ export default function FaceMoodDetector({ onMoodDetected }) {
     setIsDetecting(true);
     await startCamera();
 
+    if (!videoRef.current) {
+      setIsDetecting(false);
+      return;
+    }
+
+    if (videoRef.current.readyState < 2) {
+      await new Promise((resolve) => {
+        videoRef.current.addEventListener('loadeddata', resolve, { once: true });
+      });
+    }
+
     const detectLoop = async () => {
       if (!videoRef.current || !isDetecting) return;
 
@@ -113,10 +140,7 @@ export default function FaceMoodDetector({ onMoodDetected }) {
       }
     };
 
-    // Wait for video to be ready
-    videoRef.current.addEventListener('play', () => {
-      detectLoop();
-    });
+    detectLoop();
   };
 
   const mapExpressionToMood = (expressions) => {
