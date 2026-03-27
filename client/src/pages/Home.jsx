@@ -6,27 +6,30 @@ export default function Home() {
     {
       icon: '💭',
       title: 'Text Input',
-      description: 'Describe your mood in words'
+      description: 'Describe your mood in words',
+      to: '/recommend?tab=text'
     },
     {
       icon: '📸',
       title: 'Facial Recognition',
-      description: 'Let AI read your expressions'
+      description: 'Let AI read your expressions',
+      to: '/recommend?tab=face'
     },
     {
       icon: '🎤',
       title: 'Voice Analysis',
-      description: 'Speak your feelings out loud'
+      description: 'Speak your feelings out loud',
+      to: '/recommend?tab=voice'
     }
   ];
 
   const moods = [
-    { emoji: '😊', name: 'Happy', color: 'from-yellow-400 to-orange-500' },
-    { emoji: '😢', name: 'Sad', color: 'from-blue-400 to-blue-600' },
-    { emoji: '😠', name: 'Angry', color: 'from-red-500 to-red-700' },
-    { emoji: '😌', name: 'Relaxed', color: 'from-green-400 to-teal-500' },
-    { emoji: '⚡', name: 'Energetic', color: 'from-purple-500 to-pink-600' },
-    { emoji: '❤️', name: 'Romantic', color: 'from-pink-400 to-red-500' }
+    { value: 'happy', emoji: '😊', name: 'Happy', color: 'from-yellow-400 to-orange-500' },
+    { value: 'sad', emoji: '😢', name: 'Sad', color: 'from-blue-400 to-blue-600' },
+    { value: 'angry', emoji: '😠', name: 'Angry', color: 'from-red-500 to-red-700' },
+    { value: 'relaxed', emoji: '😌', name: 'Relaxed', color: 'from-green-400 to-teal-500' },
+    { value: 'energetic', emoji: '⚡', name: 'Energetic', color: 'from-purple-500 to-pink-600' },
+    { value: 'romantic', emoji: '❤️', name: 'Romantic', color: 'from-pink-400 to-red-500' }
   ];
 
   return (
@@ -120,19 +123,20 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                whileHover={{ y: -5 }}
-                className="p-8 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 text-center hover:border-coral/40 hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-all duration-300 shadow-sm dark:shadow-none"
-              >
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
-              </motion.div>
+              <Link key={index} to={feature.to} className="block">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.15 }}
+                  whileHover={{ y: -5 }}
+                  className="p-8 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 text-center hover:border-coral/40 hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-all duration-300 shadow-sm dark:shadow-none cursor-pointer"
+                >
+                  <div className="text-5xl mb-4">{feature.icon}</div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
@@ -153,18 +157,19 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
             {moods.map((mood, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className={`mood-card text-center bg-gradient-to-br ${mood.color}`}
-              >
-                <div className="text-5xl mb-2">{mood.emoji}</div>
-                <p className="font-semibold">{mood.name}</p>
-              </motion.div>
+              <Link key={index} to={`/recommend?mood=${encodeURIComponent(mood.value)}`}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className={`mood-card text-center bg-gradient-to-br ${mood.color}`}
+                >
+                  <div className="text-5xl mb-2">{mood.emoji}</div>
+                  <p className="font-semibold">{mood.name}</p>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
