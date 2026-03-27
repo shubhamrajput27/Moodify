@@ -5,8 +5,8 @@ Moodify is a mood-based music recommendation app that uses Spotify data to sugge
 ## Live Deployment
 
 - Frontend: https://moodify-shubhamrajput27-8s0cydil9.vercel.app
-- Backend: https://moodify-api-w2sc.onrender.com
-- Health check: https://moodify-api-w2sc.onrender.com/api/health
+- Backend API (same Vercel project): /api
+- Health check: /api/health
 
 ## Features
 
@@ -38,8 +38,7 @@ Moodify is a mood-based music recommendation app that uses Spotify data to sugge
 
 ### Deployment
 
-- Vercel for frontend
-- Render for backend
+- Vercel for frontend and backend API functions
 
 ## Project Structure
 
@@ -141,25 +140,21 @@ If the models are missing, face mood detection will not work.
 
 ## Deployment Guide
 
-### 1) Deploy backend on Render
+### 1) Deploy app on Vercel
 
-Use Render Blueprint from render.yaml.
+Deploy the repository root on Vercel. Frontend is built from `client/` and backend is served from `api/` Vercel Functions.
 
-Required environment variables on Render:
+Required environment variables in Vercel:
 
 - SPOTIFY_CLIENT_ID
 - SPOTIFY_CLIENT_SECRET
 - NODE_ENV=production
-- PORT=10000
-- CLIENT_URL=<your current Vercel frontend URL>
+- CLIENT_URL=<your Vercel app URL>
+- ALLOWED_ORIGINS=<optional comma-separated extra origins>
 
-After setting variables, deploy latest commit.
+Optional client variable:
 
-### 2) Deploy frontend on Vercel
-
-Set this environment variable in Vercel Production:
-
-VITE_API_URL=https://your-render-service.onrender.com/api
+- VITE_API_URL=/api
 
 Then redeploy production.
 
@@ -175,15 +170,15 @@ Backend CORS allows:
 
 ### Backend health works, recommendations fail
 
-- Check SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in Render
-- Redeploy backend after env changes
-- Check Render logs for Spotify API errors
+- Check SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in Vercel
+- Redeploy after env changes
+- Check Vercel Function logs for Spotify API errors
 
 ### Frontend cannot call backend
 
-- Ensure VITE_API_URL points to Render backend + /api
-- Ensure CLIENT_URL in Render exactly matches frontend URL
-- Redeploy both services after env changes
+- Ensure VITE_API_URL points to `/api` or your deployed `/api` base URL
+- Ensure CLIENT_URL in Vercel exactly matches frontend URL
+- Redeploy after env changes
 
 ### Face detection not working
 
@@ -194,7 +189,7 @@ Backend CORS allows:
 
 - Never commit real secrets to Git
 - Rotate Spotify Client Secret if it is exposed
-- Keep all production secrets in Render and Vercel environment settings
+- Keep all production secrets in Vercel environment settings
 
 ## License
 
