@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import TextMoodInput from '../components/TextMoodInput';
@@ -21,6 +21,17 @@ export default function Recommend() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const recommendationsRef = useRef(null);
+  const resultsSectionRef = useRef(null);
+  const shouldScrollToSongsRef = useRef(false);
+
+  const scrollToResults = useCallback(() => {
+    const target = recommendationsRef.current || resultsSectionRef.current;
+    target?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }, []);
 
   const tabs = [
     { id: 'text', label: 'Text', icon: '💭' },
@@ -43,6 +54,8 @@ export default function Recommend() {
 
   const handleMoodDetected = useCallback(async (mood, genreOverride) => {
     const genreToUse = genreOverride ?? selectedGenre;
+    shouldScrollToSongsRef.current = true;
+    requestAnimationFrame(() => scrollToResults());
     setCurrentMood(mood);
     setError(null);
     setIsLoading(true);
@@ -58,7 +71,7 @@ export default function Recommend() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedGenre]);
+  }, [scrollToResults, selectedGenre]);
 
   useEffect(() => {
     const tabFromQuery = searchParams.get('tab')?.toLowerCase();
@@ -81,6 +94,8 @@ export default function Recommend() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
+    shouldScrollToSongsRef.current = true;
+    requestAnimationFrame(() => scrollToResults());
     setIsSearching(true);
     setError(null);
     setCurrentMood(null);
@@ -98,6 +113,20 @@ export default function Recommend() {
   };
 
   const displayedSongs = searchResults.length > 0 ? searchResults : recommendations;
+
+  useEffect(() => {
+    if (!shouldScrollToSongsRef.current) return;
+    if (isLoading || isSearching) {
+      scrollToResults();
+      return;
+    }
+
+    if (displayedSongs.length === 0 && !error) return;
+
+    scrollToResults();
+
+    shouldScrollToSongsRef.current = false;
+  }, [displayedSongs.length, error, isLoading, isSearching, scrollToResults]);
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
@@ -254,6 +283,8 @@ export default function Recommend() {
           </AnimatePresence>
         </div>
 
+        <div ref={resultsSectionRef} className="scroll-mt-28" />
+
         {/* Current Mood Display */}
         {currentMood && !isLoading && (
           <motion.div
@@ -307,8 +338,10 @@ export default function Recommend() {
         {/* Recommendations Grid */}
         {!isLoading && !isSearching && displayedSongs.length > 0 && (
           <motion.div
+            ref={recommendationsRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            className="scroll-mt-28"
           >
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
