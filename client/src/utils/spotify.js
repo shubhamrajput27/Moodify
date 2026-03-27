@@ -6,18 +6,40 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
  * Spotify API client
  */
 class SpotifyAPI {
+  extractErrorMessage(error, fallbackMessage) {
+    const payload = error?.response?.data;
+
+    if (typeof payload?.error === 'string') {
+      return payload.error;
+    }
+
+    if (typeof payload?.error?.message === 'string') {
+      return payload.error.message;
+    }
+
+    if (typeof payload?.message === 'string') {
+      return payload.message;
+    }
+
+    if (typeof error?.message === 'string') {
+      return error.message;
+    }
+
+    return fallbackMessage;
+  }
+
   /**
    * Get song recommendations based on mood
    */
-  async getRecommendations(mood, limit = 20) {
+  async getRecommendations(mood, limit = 20, genre = '') {
     try {
       const response = await axios.get(`${API_URL}/spotify/recommendations`, {
-        params: { mood, limit }
+        params: { mood, limit, genre }
       });
       return response.data;
     } catch (error) {
       console.error('Error fetching recommendations:', error);
-      throw new Error(error.response?.data?.error || 'Failed to fetch recommendations');
+      throw new Error(this.extractErrorMessage(error, 'Failed to fetch recommendations'));
     }
   }
 
@@ -32,7 +54,22 @@ class SpotifyAPI {
       return response.data;
     } catch (error) {
       console.error('Error searching tracks:', error);
-      throw new Error(error.response?.data?.error || 'Failed to search tracks');
+      throw new Error(this.extractErrorMessage(error, 'Failed to search tracks'));
+    }
+  }
+
+  /**
+   * Get tracks from a Spotify playlist (playlist URL or playlist ID)
+   */
+  async getPlaylistTracks(playlist, limit = 20) {
+    try {
+      const response = await axios.get(`${API_URL}/spotify/playlist`, {
+        params: { playlist, limit }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching playlist tracks:', error);
+      throw new Error(this.extractErrorMessage(error, 'Failed to fetch playlist tracks'));
     }
   }
 
