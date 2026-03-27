@@ -12,7 +12,9 @@
       - key: PORT
         value: 10000
       - key: CLIENT_URL
-        value: https://moodify-shubhamrajput27-1hm0i4uad.vercel.app
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
       - key: SPOTIFY_CLIENT_ID
         sync: false
       - key: SPOTIFY_CLIENT_SECRET

@@ -10,10 +10,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === 'production';
+const extraOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:3000',
   'http://localhost:3000',
   'http://localhost:3001',
+  ...extraOrigins,
 ];
 
 // Middleware
@@ -24,9 +29,9 @@ app.use(cors({
     }
 
     const isExactAllowed = allowedOrigins.includes(origin);
-    const isVercelPreview = /^https:\/\/moodify-shubhamrajput27-[a-z0-9]+\.vercel\.app$/.test(origin);
+    const isVercelDomain = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
 
-    if (isExactAllowed || isVercelPreview) {
+    if (isExactAllowed || isVercelDomain) {
       return callback(null, true);
     }
 
