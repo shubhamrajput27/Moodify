@@ -9,7 +9,7 @@ const router = express.Router();
  */
 router.get('/recommendations', async (req, res, next) => {
   try {
-    const { mood, limit } = req.query;
+    const { mood, limit, genre } = req.query;
 
     if (!mood) {
       return res.status(400).json({ error: 'Mood parameter is required' });
@@ -25,11 +25,13 @@ router.get('/recommendations', async (req, res, next) => {
 
     const recommendations = await spotifyService.getRecommendations(
       mood, 
-      parseInt(limit) || 20
+      parseInt(limit) || 20,
+      genre || ''
     );
 
     res.json({
       mood,
+      genre: genre || null,
       count: recommendations.length,
       tracks: recommendations
     });
@@ -54,6 +56,30 @@ router.get('/search', async (req, res, next) => {
 
     res.json({
       query: q,
+      count: tracks.length,
+      tracks
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/spotify/playlist
+ * Fetch tracks from a Spotify playlist (ID or playlist URL)
+ */
+router.get('/playlist', async (req, res, next) => {
+  try {
+    const { playlist, limit } = req.query;
+
+    if (!playlist) {
+      return res.status(400).json({ error: 'Playlist ID or URL is required' });
+    }
+
+    const tracks = await spotifyService.getPlaylistTracks(playlist, parseInt(limit, 10) || 20);
+
+    res.json({
+      playlist,
       count: tracks.length,
       tracks
     });
