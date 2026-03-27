@@ -6,6 +6,10 @@ export default function Navbar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
 
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -15,8 +19,18 @@ export default function Navbar() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl">🎵</span>
+          <Link
+            to="/"
+            onClick={handleLogoClick}
+            className="flex items-center gap-2"
+            title="Go to Home"
+            aria-label="Go to Home"
+          >
+            <img
+              src="/spotify-favicon.svg"
+              alt="Spotify logo"
+              className="w-7 h-7 rounded-md"
+            />
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
               Moodify
             </h1>
