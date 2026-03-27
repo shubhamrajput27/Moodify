@@ -1,14 +1,25 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 
 const Home = lazy(() => import('./pages/Home'))
 const Recommend = lazy(() => import('./pages/Recommend'))
 const Login = lazy(() => import('./pages/Login'))
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [pathname])
+
+  return null
+}
+
 function App() {
   return (
     <div className="min-h-screen bg-dark-900">
+      <ScrollToTop />
       <Navbar />
       <Suspense
         fallback={
