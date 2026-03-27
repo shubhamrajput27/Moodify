@@ -51,6 +51,14 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Moodify API is running',
+    docs: '/api/health'
+  });
+});
+
 app.use('/api/spotify', spotifyRouter);
 app.use('/api/mood', moodRouter);
 
