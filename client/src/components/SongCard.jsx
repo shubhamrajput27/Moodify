@@ -2,31 +2,15 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function SongCard({ song, index }) {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [audioError, setAudioError] = useState(false);
 
   const handlePlayPreview = () => {
-    if (!song.previewUrl) {
+    if (!song.spotifyUrl) {
       setAudioError(true);
       return;
     }
 
-    const audio = new Audio(song.previewUrl);
-    
-    if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    } else {
-      audio.play()
-        .then(() => {
-          setIsPlaying(true);
-          audio.onended = () => setIsPlaying(false);
-        })
-        .catch(err => {
-          console.error('Error playing audio:', err);
-          setAudioError(true);
-        });
-    }
+    window.open(song.spotifyUrl, '_blank', 'noopener,noreferrer');
   };
 
   const formatDuration = (ms) => {
@@ -56,22 +40,16 @@ export default function SongCard({ song, index }) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handlePlayPreview}
-            disabled={!song.previewUrl}
+            disabled={!song.spotifyUrl}
             className={`w-16 h-16 rounded-full flex items-center justify-center ${
-              song.previewUrl 
+              song.spotifyUrl 
                 ? 'bg-primary-600 hover:bg-primary-700' 
                 : 'bg-gray-600 cursor-not-allowed'
             } text-white transition-colors`}
           >
-            {isPlaying ? (
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-            )}
+            <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+            </svg>
           </motion.button>
         </div>
 
@@ -99,7 +77,7 @@ export default function SongCard({ song, index }) {
         )}
 
         {audioError && (
-          <p className="text-yellow-500 text-xs mb-3">Preview not available</p>
+          <p className="text-yellow-500 text-xs mb-3">Spotify link not available</p>
         )}
 
         {/* Actions */}
