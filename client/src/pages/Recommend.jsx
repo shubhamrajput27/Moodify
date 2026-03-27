@@ -1,16 +1,20 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import TextMoodInput from '../components/TextMoodInput';
 import VoiceMoodDetector from '../components/VoiceMoodDetector';
 import SongCard from '../components/SongCard';
 import spotifyAPI from '../utils/spotify';
-import { getMoodData } from '../utils/moodMapper';
+import { getAllMoods, getMoodData } from '../utils/moodMapper';
 
 const FaceMoodDetector = lazy(() => import('../components/FaceMoodDetector'));
+const validTabs = new Set(['text', 'face', 'voice']);
 
 export default function Recommend() {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('text');
   const [currentMood, setCurrentMood] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState('');
   const [recommendations, setRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,7 +28,21 @@ export default function Recommend() {
     { id: 'voice', label: 'Voice', icon: '🎤' }
   ];
 
-  const handleMoodDetected = async (mood) => {
+  const genreOptions = [
+    { value: '', label: 'All Genres' },
+    { value: 'bollywood', label: 'Bollywood' },
+    { value: 'hindi pop', label: 'Hindi Pop' },
+    { value: 'punjabi', label: 'Punjabi' },
+    { value: 'indian classical', label: 'Indian Classical' },
+    { value: 'indian rock', label: 'Indian Rock' },
+    { value: 'desi hip hop', label: 'Desi Hip Hop' },
+    { value: 'indian indie', label: 'Indian Indie' },
+    { value: 'tamil', label: 'Tamil' },
+    { value: 'telugu', label: 'Telugu' }
+  ];
+
+  const handleMoodDetected = useCallback(async (mood, genreOverride) => {
+    const genreToUse = genreOverride ?? selectedGenre;
     setCurrentMood(mood);
     setError(null);
     setIsLoading(true);
@@ -32,7 +50,7 @@ export default function Recommend() {
     setSearchResults([]);
 
     try {
-      const data = await spotifyAPI.getRecommendations(mood, 20);
+      const data = await spotifyAPI.getRecommendations(mood, 20, genreToUse);
       setRecommendations(data.tracks);
     } catch (err) {
       setError(err.message || 'Failed to fetch recommendations');
@@ -40,7 +58,24 @@ export default function Recommend() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedGenre]);
+
+  useEffect(() => {
+    const tabFromQuery = searchParams.get('tab')?.toLowerCase();
+    if (tabFromQuery && validTabs.has(tabFromQuery)) {
+      setActiveTab(tabFromQuery);
+    }
+
+    const moodFromQuery = searchParams.get('mood')?.toLowerCase();
+    if (!moodFromQuery) return;
+
+    if (!getAllMoods().includes(moodFromQuery)) {
+      setError(`Unsupported mood "${moodFromQuery}"`);
+      return;
+    }
+
+    handleMoodDetected(moodFromQuery);
+  }, [searchParams, handleMoodDetected]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -118,6 +153,39 @@ export default function Recommend() {
               </button>
             </p>
           )}
+        </motion.div>
+
+        {/* Genre Filter */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="max-w-2xl mx-auto mb-8"
+        >
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Preferred Genre
+          </label>
+          <select
+            value={selectedGenre}
+            onChange={(e) => {
+              const nextGenre = e.target.value;
+              setSelectedGenre(nextGenre);
+              if (currentMood) {
+                handleMoodDetected(currentMood, nextGenre);
+              }
+            }}
+            className="w-full px-4 py-3 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral transition-colors duration-300"
+          >
+            {genreOptions.map((genre) => (
+              <option
+                key={genre.value || 'all'}
+                value={genre.value}
+                className="bg-white text-gray-900 dark:bg-[#121212] dark:text-gray-100"
+              >
+                {genre.label}
+              </option>
+            ))}
+          </select>
         </motion.div>
 
         {/* Tab Navigation */}
@@ -247,7 +315,7 @@ export default function Recommend() {
                 {searchResults.length > 0 ? 'Search Results' : 'Recommended for You'}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {displayedSongs.length} tracks {currentMood ? `curated based on your ${currentMood} mood` : 'matching your search'}
+                {displayedSongs.length} tracks {currentMood ? `curated based on your ${currentMood} mood${selectedGenre ? ` and ${selectedGenre}` : ''}` : 'matching your search'}
               </p>
             </div>
 
