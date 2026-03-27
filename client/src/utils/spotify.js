@@ -1,6 +1,23 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+function normalizeApiUrl(value) {
+  const raw = typeof value === 'string' ? value.trim() : '';
+
+  if (!raw) {
+    return '/api';
+  }
+
+  const trimmed = raw.replace(/\/+$/, '');
+
+  // If a full origin is provided without an API base, append /api.
+  if (/^https?:\/\//i.test(trimmed) && !trimmed.endsWith('/api')) {
+    return `${trimmed}/api`;
+  }
+
+  return trimmed;
+}
+
+const API_URL = normalizeApiUrl(import.meta.env.VITE_API_URL);
 
 /**
  * Spotify API client
