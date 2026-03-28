@@ -200,12 +200,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-white dark:bg-[#0a0a0a] border-t border-gray-300 dark:border-white/10">
-        <div className="container mx-auto px-4 text-center text-gray-500 dark:text-gray-500">
-          <p className="text-sm">© 2025 Moodify. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 }

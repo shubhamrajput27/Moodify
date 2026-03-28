@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { usePlayer } from '../context/PlayerContext';
 
 export default function SongCard({ song, index }) {
   const [audioError, setAudioError] = useState(false);
+  const { currentTrack, isPlaying, playTrack } = usePlayer();
 
   const handlePlayPreview = () => {
-    if (!song.spotifyUrl) {
+    const started = playTrack(song);
+    if (!started) {
       setAudioError(true);
       return;
     }
 
-    window.open(song.spotifyUrl, '_blank', 'noopener,noreferrer');
+    setAudioError(false);
   };
+
+  const isCurrentSong = currentTrack?.id === song.id;
+  const showPauseState = isCurrentSong && isPlaying;
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -40,16 +46,20 @@ export default function SongCard({ song, index }) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handlePlayPreview}
-            disabled={!song.spotifyUrl}
+            disabled={!song.previewUrl}
             className={`w-16 h-16 rounded-full flex items-center justify-center ${
-              song.spotifyUrl 
+              song.previewUrl 
                 ? 'bg-primary-600 hover:bg-primary-700' 
                 : 'bg-gray-600 cursor-not-allowed'
             } text-white transition-colors`}
           >
-            <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-            </svg>
+            {showPauseState ? (
+              <span className="text-2xl">❚❚</span>
+            ) : (
+              <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
+            )}
           </motion.button>
         </div>
 
@@ -77,7 +87,7 @@ export default function SongCard({ song, index }) {
         )}
 
         {audioError && (
-          <p className="text-yellow-500 text-xs mb-3">Spotify link not available</p>
+          <p className="text-yellow-500 text-xs mb-3">Audio preview not available for this track</p>
         )}
 
         {/* Actions */}
