@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { mood, limit, genre } = req.query || {};
+    const { mood, limit, genre, refresh } = req.query || {};
 
     if (!mood) {
       json(res, 400, { error: "Mood parameter is required" });
@@ -28,7 +28,12 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const recommendations = await spotifyService.getRecommendations(mood, parseInt(limit, 10) || 20, genre || "");
+    const recommendations = await spotifyService.getRecommendations(
+      mood,
+      parseInt(limit, 10) || 20,
+      genre || "",
+      refresh || ""
+    );
 
     json(res, 200, {
       mood,

@@ -9,7 +9,7 @@ const router = express.Router();
  */
 router.get('/recommendations', async (req, res, next) => {
   try {
-    const { mood, limit, genre } = req.query;
+    const { mood, limit, genre, refresh } = req.query;
 
     if (!mood) {
       return res.status(400).json({ error: 'Mood parameter is required' });
@@ -26,7 +26,8 @@ router.get('/recommendations', async (req, res, next) => {
     const recommendations = await spotifyService.getRecommendations(
       mood, 
       parseInt(limit) || 20,
-      genre || ''
+      genre || '',
+      refresh || ''
     );
 
     res.json({

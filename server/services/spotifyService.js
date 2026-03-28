@@ -215,20 +215,67 @@ class SpotifyService {
     return out.slice(0, limit);
   }
 
+  hashString(input) {
+    const text = String(input || '');
+    let hash = 0;
+    for (let i = 0; i < text.length; i += 1) {
+      hash = ((hash << 5) - hash) + text.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  getSeedGenres(moodData, refreshKey = '') {
+    const baseSeeds = (moodData?.seedGenres || '')
+      .split(',')
+      .map(seed => seed.trim())
+      .filter(Boolean);
+    const moodGenres = (moodData?.genres || []).map((genre) => this.normalizeGenre(genre)).filter(Boolean);
+    const uniquePool = [...new Set([...baseSeeds, ...moodGenres])];
+
+    if (uniquePool.length <= 3) {
+      return (uniquePool.length ? uniquePool : ['pop', 'dance', 'rock']).slice(0, 3).join(',');
+    }
+
+    const startIndex = this.hashString(refreshKey) % uniquePool.length;
+    const selected = [];
+    for (let i = 0; i < 3; i += 1) {
+      selected.push(uniquePool[(startIndex + i) % uniquePool.length]);
+    }
+
+    return selected.join(',');
+  }
+
+  shuffleTracks(tracks, refreshKey = '') {
+    const list = [...tracks];
+    let seed = this.hashString(refreshKey || Date.now());
+
+    for (let i = list.length - 1; i > 0; i -= 1) {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      const j = seed % (i + 1);
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+
+    return list;
+  }
+
   /**
    * Get song recommendations based on mood
    */
-  async getRecommendations(mood, limit = 20, genre = '') {
+  async getRecommendations(mood, limit = 20, genre = '', refresh = '') {
     try {
       const token = await this.getAccessToken();
       const moodData = this.getMoodMapping(mood);
       const market = this.getMarket();
       const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 10);
       const indiaQuery = this.buildGenreAwareQuery(mood, moodData, genre);
+      const refreshKey = String(refresh || Date.now());
+      const seedGenres = this.getSeedGenres(moodData, refreshKey);
+      const searchOffset = this.hashString(refreshKey) % 80;
 
       // Build query parameters
       const params = new URLSearchParams({
-        seed_genres: moodData.seedGenres,
+        seed_genres: seedGenres,
         limit: safeLimit.toString(),
         market
       });
@@ -266,14 +313,14 @@ class SpotifyService {
         } else if (error.response?.status === 404) {
           // Some Spotify apps do not have access to recommendations.
           // Fall back to search-based discovery so users still get songs.
-          return this.searchTracks(indiaQuery, safeLimit);
+          return this.searchTracks(indiaQuery, safeLimit, searchOffset);
         } else {
-          return this.searchTracks(indiaQuery, safeLimit);
+          return this.searchTracks(indiaQuery, safeLimit, searchOffset);
         }
       }
 
       if (!response?.data?.tracks?.length) {
-        return this.searchTracks(indiaQuery, safeLimit);
+        return this.searchTracks(indiaQuery, safeLimit, searchOffset);
       }
 
       // Format the response
@@ -290,8 +337,9 @@ class SpotifyService {
       }));
 
       // Blend with India-focused search to prioritize Indian-origin results.
-      const indiaTracks = await this.searchTracks(indiaQuery, safeLimit);
-      return this.mergeUniqueTracks(indiaTracks, recommendationTracks, safeLimit);
+      const indiaTracks = await this.searchTracks(indiaQuery, safeLimit, searchOffset);
+      const mergedTracks = this.mergeUniqueTracks(indiaTracks, recommendationTracks, safeLimit * 2);
+      return this.shuffleTracks(mergedTracks, refreshKey).slice(0, safeLimit);
     } catch (error) {
       console.error('Error getting recommendations:', error.response?.data || error.message);
       if (error.response) {
@@ -305,11 +353,12 @@ class SpotifyService {
   /**
    * Search for tracks by query
    */
-  async searchTracks(query, limit = 10) {
+  async searchTracks(query, limit = 10, offset = 0) {
     try {
       const token = await this.getAccessToken();
       const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 10);
       const market = this.getMarket();
+      const safeOffset = Math.max(parseInt(offset, 10) || 0, 0);
 
       const response = await axios.get(
         `https://api.spotify.com/v1/search`,
@@ -321,6 +370,7 @@ class SpotifyService {
             q: query,
             type: 'track',
             limit: safeLimit,
+            offset: safeOffset,
             market
           }
         }

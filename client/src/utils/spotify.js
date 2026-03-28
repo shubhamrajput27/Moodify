@@ -48,10 +48,10 @@ class SpotifyAPI {
   /**
    * Get song recommendations based on mood
    */
-  async getRecommendations(mood, limit = 20, genre = '') {
+  async getRecommendations(mood, limit = 20, genre = '', refresh = '') {
     try {
       const response = await axios.get(`${API_URL}/spotify/recommendations`, {
-        params: { mood, limit, genre }
+        params: { mood, limit, genre, refresh }
       });
       return response.data;
     } catch (error) {

@@ -24,6 +24,7 @@ export default function Recommend() {
   const recommendationsRef = useRef(null);
   const resultsSectionRef = useRef(null);
   const shouldScrollToSongsRef = useRef(false);
+  const refreshCounterRef = useRef(0);
 
   const scrollToResults = useCallback(() => {
     const target = recommendationsRef.current || resultsSectionRef.current;
@@ -63,7 +64,9 @@ export default function Recommend() {
     setSearchResults([]);
 
     try {
-      const data = await spotifyAPI.getRecommendations(mood, 20, genreToUse);
+      refreshCounterRef.current += 1;
+      const refreshKey = `${Date.now()}-${refreshCounterRef.current}`;
+      const data = await spotifyAPI.getRecommendations(mood, 20, genreToUse, refreshKey);
       setRecommendations(data.tracks);
     } catch (err) {
       setError(err.message || 'Failed to fetch recommendations');
