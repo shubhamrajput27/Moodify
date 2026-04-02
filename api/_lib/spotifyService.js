@@ -113,6 +113,24 @@ class SpotifyService {
         indiaHints: ["punjabi workout", "bollywood dance", "indian edm"],
         features: { min_energy: 0.7, min_tempo: 120, target_energy: 0.9, target_valence: 0.7 },
       },
+      anxious: {
+        genres: ["indie", "electronic", "alt-rock", "trip-hop"],
+        seedGenres: "indie,alternative,trip-hop",
+        indiaHints: ["indian indie", "hindi alt", "moody electronic"],
+        features: { min_energy: 0.55, max_valence: 0.45, target_energy: 0.65, target_valence: 0.35 },
+      },
+      nostalgic: {
+        genres: ["oldies", "acoustic", "soul", "indie"],
+        seedGenres: "acoustic,soul,indie",
+        indiaHints: ["bollywood classics", "old hindi songs", "retro indian"],
+        features: { target_valence: 0.55, target_energy: 0.45, max_tempo: 115 },
+      },
+      stressed: {
+        genres: ["lo-fi", "ambient", "piano", "chill"],
+        seedGenres: "ambient,lo-fi,classical",
+        indiaHints: ["calm hindi", "stress relief india", "meditation bollywood"],
+        features: { max_energy: 0.45, target_valence: 0.5, target_energy: 0.35, max_tempo: 105 },
+      },
       romantic: {
         genres: ["romance", "soul", "r-n-b", "love"],
         seedGenres: "soul,r-n-b,jazz",

@@ -1,7 +1,7 @@
 const { applyCors, enforceMethod, json } = require("../_lib/http");
 const spotifyService = require("../_lib/spotifyService");
 
-const validMoods = ["happy", "sad", "angry", "relaxed", "calm", "energetic", "romantic"];
+const validMoods = ["happy", "sad", "angry", "relaxed", "calm", "energetic", "anxious", "nostalgic", "stressed", "romantic"];
 
 module.exports = async (req, res) => {
   if (!applyCors(req, res, ["GET"])) {

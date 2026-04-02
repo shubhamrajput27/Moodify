@@ -17,6 +17,9 @@ module.exports = (req, res) => {
       { value: "relaxed", label: "Relaxed", emoji: "😌", description: "Calm and peaceful" },
       { value: "calm", label: "Calm", emoji: "🧘", description: "Tranquil and meditative" },
       { value: "energetic", label: "Energetic", emoji: "⚡", description: "High-energy and pumped" },
+      { value: "anxious", label: "Anxious", emoji: "😰", description: "Restless and tense" },
+      { value: "nostalgic", label: "Nostalgic", emoji: "📼", description: "Warm throwback feelings" },
+      { value: "stressed", label: "Stressed", emoji: "😵", description: "Overloaded and tense" },
       { value: "romantic", label: "Romantic", emoji: "❤️", description: "Loving and passionate" },
     ],
   });

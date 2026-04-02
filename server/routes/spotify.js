@@ -15,7 +15,7 @@ router.get('/recommendations', async (req, res, next) => {
       return res.status(400).json({ error: 'Mood parameter is required' });
     }
 
-    const validMoods = ['happy', 'sad', 'angry', 'relaxed', 'calm', 'energetic', 'romantic'];
+    const validMoods = ['happy', 'sad', 'angry', 'relaxed', 'calm', 'energetic', 'anxious', 'nostalgic', 'stressed', 'romantic'];
     if (!validMoods.includes(mood.toLowerCase())) {
       return res.status(400).json({ 
         error: 'Invalid mood', 
@@ -102,6 +102,9 @@ router.get('/moods', (req, res) => {
       { value: 'relaxed', label: 'Relaxed', emoji: '😌', description: 'Calm and peaceful' },
       { value: 'calm', label: 'Calm', emoji: '🧘', description: 'Tranquil and meditative' },
       { value: 'energetic', label: 'Energetic', emoji: '⚡', description: 'High-energy and pumped' },
+      { value: 'anxious', label: 'Anxious', emoji: '😰', description: 'Restless and tense' },
+      { value: 'nostalgic', label: 'Nostalgic', emoji: '📼', description: 'Warm throwback feelings' },
+      { value: 'stressed', label: 'Stressed', emoji: '😵', description: 'Overloaded and tense' },
       { value: 'romantic', label: 'Romantic', emoji: '❤️', description: 'Loving and passionate' }
     ]
   });

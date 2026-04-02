@@ -29,6 +29,9 @@ export default function Home() {
     { value: 'angry', emoji: '😠', name: 'Angry', color: 'from-red-500 to-red-700' },
     { value: 'relaxed', emoji: '😌', name: 'Relaxed', color: 'from-green-400 to-teal-500' },
     { value: 'energetic', emoji: '⚡', name: 'Energetic', color: 'from-purple-500 to-pink-600' },
+    { value: 'anxious', emoji: '😰', name: 'Anxious', color: 'from-indigo-500 to-purple-600' },
+    { value: 'nostalgic', emoji: '📼', name: 'Nostalgic', color: 'from-amber-400 to-orange-500' },
+    { value: 'stressed', emoji: '😵', name: 'Stressed', color: 'from-rose-500 to-orange-500' },
     { value: 'romantic', emoji: '❤️', name: 'Romantic', color: 'from-pink-400 to-red-500' }
   ];
 

@@ -18,6 +18,7 @@ export default function SongCard({ song, index }) {
 
   const isCurrentSong = currentTrack?.id === song.id;
   const showPauseState = isCurrentSong && isPlaying;
+  const hasPreview = Boolean(song.previewUrl);
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -92,6 +93,17 @@ export default function SongCard({ song, index }) {
 
         {/* Actions */}
         <div className="flex gap-2">
+          <button
+            onClick={handlePlayPreview}
+            disabled={!hasPreview}
+            className={`flex-1 text-center text-sm py-2 rounded-lg font-medium transition-colors ${
+              hasPreview
+                ? 'bg-coral hover:bg-coral-dark text-white'
+                : 'bg-gray-300 dark:bg-white/10 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            {!hasPreview ? 'No Preview' : showPauseState ? 'Pause Here' : 'Play Here'}
+          </button>
           <a
             href={song.spotifyUrl}
             target="_blank"
