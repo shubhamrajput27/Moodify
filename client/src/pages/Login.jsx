@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
+  const { user, signUp, signIn, signInWithSpotify, signOut } = useAuth();
+  const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
@@ -10,17 +14,32 @@ export default function Login() {
     name: ''
   });
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // There's no account backend yet (no database, no session handling) —
-    // tell the user honestly instead of faking a loading spinner and a
-    // silent "success" that doesn't actually sign anyone in.
-    setError(
-      isLogin
-        ? 'Email login is not available yet. Mood recommendations work without an account — head back to Home to try them.'
-        : 'Account creation is not available yet. Mood recommendations work without an account — head back to Home to try them.'
-    );
+    setError('');
+    setInfo('');
+    setIsLoading(true);
+
+    try {
+      if (isLogin) {
+        await signIn(formData.email, formData.password);
+        navigate('/');
+      } else {
+        const data = await signUp(formData.email, formData.password);
+        if (data.session) {
+          navigate('/');
+        } else {
+          setInfo('Account created! Check your email to confirm it before logging in.');
+        }
+      }
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -30,10 +49,45 @@ export default function Login() {
     });
   };
 
-  const handleSpotifyLogin = () => {
-    // This project currently uses app-level recommendations, not OAuth user login.
-    setError('Spotify OAuth login is not configured yet. Please use mood recommendations to continue.');
+  const handleSpotifyLogin = async () => {
+    setError('');
+    setInfo('');
+    try {
+      await signInWithSpotify();
+    } catch (err) {
+      setError(err.message || 'Spotify login is not available right now.');
+    }
   };
+
+  if (user) {
+    return (
+      <div className="min-h-screen pt-24 pb-12 bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-gray-50 dark:bg-dark-800/50 border border-gray-200 dark:border-white/5 rounded-2xl p-8 shadow-lg"
+            >
+              <h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                You&apos;re logged in
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 mb-6 break-all">{user.email}</p>
+              <button onClick={signOut} className="w-full btn-secondary">
+                Log out
+              </button>
+            </motion.div>
+            <div className="text-center mt-6">
+              <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-coral transition-colors">
+                ← Back to Home
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
@@ -128,6 +182,7 @@ export default function Login() {
                     value={formData.password}
                     onChange={handleChange}
                     required
+                    minLength={6}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-coral transition-colors duration-300"
                   />
@@ -136,6 +191,12 @@ export default function Login() {
                 {error && (
                   <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 text-red-200 text-sm">
                     {error}
+                  </div>
+                )}
+
+                {info && (
+                  <div className="bg-green-500/20 border border-green-500 rounded-lg p-3 text-green-200 text-sm">
+                    {info}
                   </div>
                 )}
 
@@ -153,9 +214,21 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="w-full btn-primary"
+                  disabled={isLoading}
+                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLogin ? 'Login' : 'Sign Up'}
+                  {isLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      {isLogin ? 'Logging in...' : 'Creating account...'}
+                    </span>
+                  ) : (
+                    isLogin ? 'Login' : 'Sign Up'
+                  )}
                 </button>
               </form>
 
@@ -166,6 +239,7 @@ export default function Login() {
                   onClick={() => {
                     setIsLogin(!isLogin);
                     setError('');
+                    setInfo('');
                   }}
                   className="text-coral font-semibold hover:underline"
                 >

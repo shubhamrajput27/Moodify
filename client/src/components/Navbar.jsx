@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -50,10 +58,23 @@ export default function Navbar() {
             <NavLink to="/recommend" active={location.pathname === '/recommend'} icon="🎯">
               RECOMMENDATIONS
             </NavLink>
-            <NavLink to="/login" active={location.pathname === '/login'} icon="🔐">
-              LOGIN
-            </NavLink>
-            
+            {user ? (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
+                title={`Log out (${user.email})`}
+              >
+                <span>👤</span>
+                <span>LOGOUT</span>
+              </motion.button>
+            ) : (
+              <NavLink to="/login" active={location.pathname === '/login'} icon="🔐">
+                LOGIN
+              </NavLink>
+            )}
+
             {/* Theme Toggle Button */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -125,14 +146,24 @@ export default function Navbar() {
               >
                 RECOMMENDATIONS
               </NavLink>
-              <NavLink
-                to="/login"
-                active={location.pathname === '/login'}
-                icon="🔐"
-                mobile
-              >
-                LOGIN
-              </NavLink>
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
+                >
+                  <span>👤</span>
+                  <span>LOGOUT</span>
+                </button>
+              ) : (
+                <NavLink
+                  to="/login"
+                  active={location.pathname === '/login'}
+                  icon="🔐"
+                  mobile
+                >
+                  LOGIN
+                </NavLink>
+              )}
             </div>
           </motion.div>
         )}

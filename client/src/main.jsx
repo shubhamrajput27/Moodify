@@ -5,15 +5,18 @@ import App from './App.jsx'
 import './index.css'
 import { ThemeProvider } from './context/ThemeContext'
 import { PlayerProvider } from './context/PlayerContext'
+import { AuthProvider } from './context/AuthContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <ThemeProvider>
-        <PlayerProvider>
-          <App />
-        </PlayerProvider>
-      </ThemeProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <ThemeProvider>
+          <PlayerProvider>
+            <App />
+          </PlayerProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )

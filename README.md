@@ -71,6 +71,29 @@ Create client/.env with:
 
 VITE_API_URL=http://localhost:5000/api
 
+Optional (enables the Login page's real accounts via Supabase Auth):
+
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+## Accounts (optional)
+
+The Login page uses [Supabase Auth](https://supabase.com) for real email/password
+and Spotify-OAuth sign-in. It's optional — mood recommendations work without an
+account. Without Supabase configured, Login stays functional in the UI but shows
+an honest "accounts aren't set up yet" message instead of faking success.
+
+To enable it:
+
+1. Create a free project at supabase.com (no credit card required).
+2. In the dashboard, go to Project Settings -> API and copy the Project URL and
+   the `anon` public key (this key is safe to expose client-side by design).
+3. Add them to client/.env as VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+   (and to your Vercel/Render environment variables for production).
+4. Optional: to enable "Continue with Spotify", add a Spotify provider under
+   Authentication -> Providers in the Supabase dashboard, using the same
+   Spotify Client ID/Secret as the rest of the app.
+
 ## Install and Run Locally
 
 1. Install dependencies:
