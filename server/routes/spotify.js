@@ -1,5 +1,5 @@
 import express from 'express';
-import spotifyService from '../services/spotifyService.js';
+import spotifyService from '../../shared/spotifyService.cjs';
 
 const router = express.Router();
 
@@ -23,8 +23,8 @@ router.get('/recommendations', async (req, res, next) => {
       });
     }
 
-    const recommendations = await spotifyService.getRecommendations(
-      mood, 
+    const { tracks, fallback } = await spotifyService.getRecommendations(
+      mood,
       parseInt(limit) || 20,
       genre || '',
       refresh || ''
@@ -33,8 +33,9 @@ router.get('/recommendations', async (req, res, next) => {
     res.json({
       mood,
       genre: genre || null,
-      count: recommendations.length,
-      tracks: recommendations
+      count: tracks.length,
+      tracks,
+      fallback
     });
   } catch (error) {
     next(error);
@@ -53,12 +54,13 @@ router.get('/search', async (req, res, next) => {
       return res.status(400).json({ error: 'Query parameter is required' });
     }
 
-    const tracks = await spotifyService.searchTracks(q, parseInt(limit) || 10);
+    const { tracks, fallback } = await spotifyService.searchTracks(q, parseInt(limit) || 10);
 
     res.json({
       query: q,
       count: tracks.length,
-      tracks
+      tracks,
+      fallback
     });
   } catch (error) {
     next(error);

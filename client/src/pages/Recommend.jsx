@@ -21,6 +21,7 @@ export default function Recommend() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isFallback, setIsFallback] = useState(false);
   const recommendationsRef = useRef(null);
   const resultsSectionRef = useRef(null);
   const shouldScrollToSongsRef = useRef(false);
@@ -59,6 +60,7 @@ export default function Recommend() {
     requestAnimationFrame(() => scrollToResults());
     setCurrentMood(mood);
     setError(null);
+    setIsFallback(false);
     setIsLoading(true);
     setSearchQuery('');
     setSearchResults([]);
@@ -68,6 +70,7 @@ export default function Recommend() {
       const refreshKey = `${Date.now()}-${refreshCounterRef.current}`;
       const data = await spotifyAPI.getRecommendations(mood, 20, genreToUse, refreshKey);
       setRecommendations(data.tracks);
+      setIsFallback(Boolean(data.fallback));
     } catch (err) {
       setError(err.message || 'Failed to fetch recommendations');
       console.error('Error:', err);
@@ -101,12 +104,14 @@ export default function Recommend() {
     requestAnimationFrame(() => scrollToResults());
     setIsSearching(true);
     setError(null);
+    setIsFallback(false);
     setCurrentMood(null);
     setRecommendations([]);
 
     try {
       const data = await spotifyAPI.searchTracks(searchQuery, 20);
       setSearchResults(data.tracks);
+      setIsFallback(Boolean(data.fallback));
     } catch (err) {
       setError(err.message || 'Failed to search tracks');
       console.error('Error:', err);
@@ -353,6 +358,11 @@ export default function Recommend() {
               <p className="text-gray-600 dark:text-gray-400">
                 {displayedSongs.length} tracks {currentMood ? `curated based on your ${currentMood} mood${selectedGenre ? ` and ${selectedGenre}` : ''}` : 'matching your search'}
               </p>
+              {isFallback && (
+                <p className="mt-3 inline-block text-sm text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 rounded-full px-4 py-1.5">
+                  ⚠️ Live Spotify search is temporarily unavailable — showing hand-picked {currentMood || ''} tracks instead. Tap &quot;Open in Spotify&quot; to play.
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -36,7 +36,7 @@ export default function SongCard({ song, index }) {
       {/* Album Art */}
       <div className="relative overflow-hidden">
         <img
-          src={song.albumArt || '/placeholder-album.jpg'}
+          src={song.albumArt || '/placeholder-album.svg'}
           alt={song.album}
           className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
         />

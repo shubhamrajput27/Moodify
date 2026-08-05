@@ -1,5 +1,5 @@
 const { applyCors, enforceMethod, json } = require("../_lib/http");
-const spotifyService = require("../_lib/spotifyService");
+const spotifyService = require("../../shared/spotifyService.cjs");
 
 module.exports = async (req, res) => {
   if (!applyCors(req, res, ["GET"])) {
@@ -18,11 +18,12 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const tracks = await spotifyService.searchTracks(q, parseInt(limit, 10) || 10);
+    const { tracks, fallback } = await spotifyService.searchTracks(q, parseInt(limit, 10) || 10);
     json(res, 200, {
       query: q,
       count: tracks.length,
       tracks,
+      fallback,
     });
   } catch (error) {
     json(res, 500, { error: error.message || "Internal server error" });

@@ -25,6 +25,7 @@ export default [
         setTimeout: 'readonly',
         requestAnimationFrame: 'readonly',
         MediaRecorder: 'readonly',
+        performance: 'readonly',
       },
     },
     rules: {

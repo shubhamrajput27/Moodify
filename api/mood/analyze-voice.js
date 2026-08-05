@@ -1,5 +1,5 @@
 const { applyCors, enforceMethod, json, parseJsonBody } = require("../_lib/http");
-const { classifyMoodFromVoice } = require("../_lib/moodClassifier");
+const { classifyMoodFromVoice } = require("../../shared/moodClassifier.cjs");
 
 module.exports = async (req, res) => {
   if (!applyCors(req, res, ["POST"])) {

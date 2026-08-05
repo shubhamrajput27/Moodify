@@ -10,19 +10,17 @@ export default function Login() {
     name: ''
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Handle login/signup logic here
-      console.log('Form submitted:', formData);
-    }, 1000);
+    // There's no account backend yet (no database, no session handling) —
+    // tell the user honestly instead of faking a loading spinner and a
+    // silent "success" that doesn't actually sign anyone in.
+    setError(
+      isLogin
+        ? 'Email login is not available yet. Mood recommendations work without an account — head back to Home to try them.'
+        : 'Account creation is not available yet. Mood recommendations work without an account — head back to Home to try them.'
+    );
   };
 
   const handleChange = (e) => {
@@ -155,21 +153,9 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
-                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-primary"
                 >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                      />
-                      {isLogin ? 'Logging in...' : 'Creating account...'}
-                    </span>
-                  ) : (
-                    isLogin ? 'Login' : 'Sign Up'
-                  )}
+                  {isLogin ? 'Login' : 'Sign Up'}
                 </button>
               </form>
 
@@ -177,7 +163,10 @@ export default function Login() {
               <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
                 {isLogin ? "Don't have an account? " : 'Already have an account? '}
                 <button
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setError('');
+                  }}
                   className="text-coral font-semibold hover:underline"
                 >
                   {isLogin ? 'Sign Up' : 'Login'}

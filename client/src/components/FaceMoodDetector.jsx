@@ -14,40 +14,23 @@ export default function FaceMoodDetector({ onMoodDetected }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
 
-  // Load face-api models
+  // Load face-api models (self-hosted under client/public/models — see README)
   useEffect(() => {
     const loadModels = async () => {
       try {
         setIsLoading(true);
-        const modelSources = [
-          '/models',
-          'https://justadudewhohacks.github.io/face-api.js/models'
-        ];
 
-        let loaded = false;
-        for (const modelUrl of modelSources) {
-          try {
-            await Promise.all([
-              faceapi.nets.tinyFaceDetector.loadFromUri(modelUrl),
-              faceapi.nets.faceExpressionNet.loadFromUri(modelUrl),
-              faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl)
-            ]);
-            loaded = true;
-            break;
-          } catch {
-            // Try the next source.
-          }
-        }
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+          faceapi.nets.faceExpressionNet.loadFromUri('/models'),
+          faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+        ]);
 
-        if (!loaded) {
-          throw new Error('Unable to load face detection models from any source');
-        }
-        
         setModelsLoaded(true);
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading models:', err);
-        setError('Failed to load face detection models. Please check your internet connection and try again.');
+        setError('Failed to load face detection models. Please refresh and try again.');
         setIsLoading(false);
       }
     };

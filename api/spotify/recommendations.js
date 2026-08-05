@@ -1,5 +1,5 @@
 const { applyCors, enforceMethod, json } = require("../_lib/http");
-const spotifyService = require("../_lib/spotifyService");
+const spotifyService = require("../../shared/spotifyService.cjs");
 
 const validMoods = ["happy", "sad", "angry", "relaxed", "calm", "energetic", "anxious", "nostalgic", "stressed", "romantic"];
 
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const recommendations = await spotifyService.getRecommendations(
+    const { tracks, fallback } = await spotifyService.getRecommendations(
       mood,
       parseInt(limit, 10) || 20,
       genre || "",
@@ -38,8 +38,9 @@ module.exports = async (req, res) => {
     json(res, 200, {
       mood,
       genre: genre || null,
-      count: recommendations.length,
-      tracks: recommendations,
+      count: tracks.length,
+      tracks,
+      fallback,
     });
   } catch (error) {
     json(res, 500, { error: error.message || "Internal server error" });

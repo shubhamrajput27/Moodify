@@ -1,5 +1,5 @@
 const { applyCors, enforceMethod, json } = require("../_lib/http");
-const spotifyService = require("../_lib/spotifyService");
+const spotifyService = require("../../shared/spotifyService.cjs");
 
 module.exports = async (req, res) => {
   if (!applyCors(req, res, ["GET"])) {
